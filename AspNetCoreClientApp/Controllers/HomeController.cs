@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -19,42 +20,64 @@ namespace AspNetCoreClientApp.Controllers
             _tokenService = tokenService;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> About()
+        public async Task<IActionResult> Index()
         {
             var token = await _tokenService.GetTokenForWebApiAsync(User);
-
             var authDelegate = new DelegateAuthenticationProvider(
                                     (requestMessage) =>
                                     {
                                         var authHeader = new AuthenticationHeaderValue("bearer", token);
                                         requestMessage.Headers.Authorization = authHeader;
                                         return Task.FromResult(0);
-                                });
+                                    });
 
             var client = new GraphServiceClient(authDelegate);
-            var blah = await client.Users.Request().GetAsync();
+            var me = await client.Me.Request().GetAsync();
+            var collection = GraphObjectToCollection(me);
 
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            return View(collection);
         }
 
         [AllowAnonymous]
         public IActionResult Error()
         {
             return View();
+        }
+
+        private NameValueCollection GraphObjectToCollection(object obj)
+        {
+            var collection = new NameValueCollection();
+
+            if (obj == null)
+            {
+                return collection;
+            }
+
+            var type = obj.GetType();
+
+            foreach (var prop in type.GetProperties())
+            {
+                if (prop.PropertyType != typeof(string))
+                {
+                    continue;
+                }
+
+                var valueObject = prop.GetValue(obj);
+                if(valueObject == null)
+                {
+                    continue;
+                }
+
+                var value = valueObject.ToString();
+                if (string.IsNullOrEmpty(value))
+                {
+                    continue;
+                }
+
+                collection.Add(prop.Name, value);
+            }
+
+            return collection;
         }
     }
 }
