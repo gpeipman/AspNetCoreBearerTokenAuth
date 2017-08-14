@@ -21,7 +21,6 @@ namespace AspNetCoreClientApp
             var principal = context.Ticket.Principal;
             var request = context.HttpContext.Request;
             var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
-            var properties = context.Properties;
 
             var tokenService = (ITokenService)context.HttpContext.RequestServices.GetService(typeof(ITokenService));
             try

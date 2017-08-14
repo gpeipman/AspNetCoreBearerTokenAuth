@@ -6,7 +6,7 @@ namespace AspNetCoreClientApp
 {
     public interface ITokenService
     {
-        Task<string> GetTokenForWebApiAsync(ClaimsPrincipal user);
+        Task<string> GetBearerToken(ClaimsPrincipal user);
 
         Task<AuthenticationResult> RequestTokenAsync(
             ClaimsPrincipal claimsPrincipal,

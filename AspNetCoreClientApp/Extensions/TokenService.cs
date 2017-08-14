@@ -24,7 +24,7 @@ namespace AspNetCoreClientApp
             _logger = logger;
         }
 
-        public async Task<string> GetTokenForWebApiAsync(ClaimsPrincipal user)
+        public async Task<string> GetBearerToken(ClaimsPrincipal user)
         {
             return await GetAccessTokenForResourceAsync(_adOptions.GraphResourceId, user).ConfigureAwait(false);
         }

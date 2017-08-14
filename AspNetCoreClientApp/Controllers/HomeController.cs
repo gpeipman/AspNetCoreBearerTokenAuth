@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
+﻿using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +19,7 @@ namespace AspNetCoreClientApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var token = await _tokenService.GetTokenForWebApiAsync(User);
+            var token = await _tokenService.GetBearerToken(User);
             var authDelegate = new DelegateAuthenticationProvider(
                                     (requestMessage) =>
                                     {
